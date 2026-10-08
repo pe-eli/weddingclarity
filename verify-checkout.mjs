@@ -19,15 +19,16 @@ function run(url, verified, search = '') {
   });
   return links;
 }
-for (const [url, ready] of [['', false], ['', true], ['https://checkout.example.test/kit', false], ['javascript:alert(1)', true], ['http://checkout.example.test/kit', true], ['not-a-url', true]]) {
+for (const [url, ready] of [['', false], ['', true], ['javascript:alert(1)', true], ['http://checkout.example.test/kit', true], ['not-a-url', true]]) {
   assert.ok(run(url, ready).every(l => !l.href && l.attributes['aria-disabled'] === 'true'));
 }
 for (const source of ['bio', 'dm']) {
-  const links = run('https://checkout.example.test/kit?product=kit&utm_campaign=default', true, `?utm_source=instagram&utm_content=${source}&utm_campaign=wedding%20kit&private_note=excluded`);
+  const links = run('https://pay.hotmart.com/O107942250T?bid=1791469571471', false, `?utm_source=instagram&utm_content=${source}&utm_campaign=wedding%20kit&private_note=excluded`);
   assert.equal(new Set(links.map(l => l.href)).size, 1);
   for (const link of links) {
     const url = new URL(link.href);
-    assert.equal(url.searchParams.get('product'), 'kit');
+    assert.equal(url.searchParams.get('bid'), '1791469571471');
+    assert.equal(url.origin + url.pathname, 'https://pay.hotmart.com/O107942250T');
     assert.equal(url.searchParams.get('utm_source'), 'instagram');
     assert.equal(url.searchParams.get('utm_content'), source);
     assert.equal(url.searchParams.get('utm_campaign'), 'wedding kit');
@@ -35,4 +36,4 @@ for (const source of ['bio', 'dm']) {
     assert.equal(link.attributes['aria-disabled'], undefined);
   }
 }
-console.log('PASS: all three CTAs, missing configuration, launch gate, invalid destinations, bio/DM UTMs, query preservation. No network requests or purchases.');
+console.log('PASS: all three CTAs, missing configuration, invalid destinations, Hotmart bid, bio/DM UTMs, query preservation. No network requests or purchases.');

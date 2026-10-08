@@ -1,9 +1,8 @@
 "use strict";
-// Only verified releases can send buyers to checkout.
-const launchReady = Object.values(LAUNCH_CONFIG).every(Boolean);
+// The owner-supplied checkout is independent of the remaining content review.
 let checkoutDestination = null;
 try {
-  if (CHECKOUT_URL && launchReady) {
+  if (CHECKOUT_URL) {
     const destination = new URL(CHECKOUT_URL);
     if (destination.protocol !== "https:") throw new Error("Checkout must use HTTPS.");
     const incoming = new URLSearchParams(window.location.search);
